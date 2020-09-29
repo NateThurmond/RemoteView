@@ -1,0 +1,84 @@
+diff --git a/src/rvDomDiff.js b/src/rvDomDiff.js
+index 72f7a96..447b998 100644
+--- a/src/rvDomDiff.js
++++ b/src/rvDomDiff.js
+@@ -309,6 +309,7 @@ class RvDomDiff {
+     // determine if their is difference in canvas data
+     if ((typeof (node1.type !== 'undefined') && node1.type === 'canvas') ||
+       (typeof (node2.type !== 'undefined') && node2.type === 'canvas')) {
++      node1['data']['oldCanvasData'] = node2['data']['canvasData'];
+       return true;
+     }
+ 
+@@ -344,23 +345,60 @@ class RvDomDiff {
+       elem.data({});
+     } else {
+       if (typeof newData['canvasData'] !== 'undefined') {
+-        let imageData = newData['canvasData']['data'];
+ 
+-        // let cHeight = newData['canvasData']['height'];
++        if (typeof newData['oldCanvasData'] !== 'undefined') {
++          // console.log('found old canvas');
++          // console.log(newData);
++          let oldImageData = newData['oldCanvasData']['data'];
+ 
+-        // let cWidth = newData['canvasData']['width'];
++          let imageData = newData['canvasData']['data'];
+ 
+-        let img = new Image();
++          let oldImg = new Image();
+ 
+-        img.onload = function () {
+-          let ctx2 = elem[0].getContext('2d');
++          let img = new Image();
+ 
+-          ctx2.drawImage(img, 0, 0); // Or at whatever offset you like
++          oldImg.onload = function () {
++            let ctx3 = elem[0].getContext('2d');
+ 
+-          delete newData['canvasData'];
+-          elem.data(newData);
+-        };
+-        img.src = imageData;
++            ctx3.drawImage(oldImg, 0, 0);
++            // ctx3.drawImage(img, 0, 0);
++
++            img.onload = function () {
++              ctx3.drawImage(img, 0, 0);
++              // ctx3.drawImage(oldImg, 0, 0);
++
++              setTimeout(function () {
++                delete newData['oldCanvasData'];
++                newData['canvasData']['data'] = elem[0].toDataURL();
++                // elem.data(newData);
++              }, 500);
++              // elem.data(newData);
++            };
++            img.src = imageData;
++            // img.src = oldImageData;
++          };
++          oldImg.src = oldImageData;
++          // oldImg.src = imageData;
++        } else {
++
++          let imageData = newData['canvasData']['data'];
++
++          // let cHeight = newData['canvasData']['height'];
++
++          // let cWidth = newData['canvasData']['width'];
++
++          let img = new Image();
++
++          img.onload = function () {
++            let ctx2 = elem[0].getContext('2d');
++
++            ctx2.drawImage(img, 0, 0); // Or at whatever offset you like
++
++            newData['oldCanvasData'] = newData['canvasData'];
++            elem.data(newData);
++          };
++          img.src = imageData;
++        }
+       } else {
+         elem.data(newData);
+       }
