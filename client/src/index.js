@@ -106,11 +106,11 @@ function onMouseDown(e) {
   // }
 }
 
-function onMouseUp(e) {
+function onMouseUp(_e) {
   mouseDown = false;
 
   // drawing = false;
-  // mouseMovementEmit(current.x, current.y, e.clientX, e.clientY, true);
+  // mouseMovementEmit(current.x, current.y, _e.clientX, _e.clientY, true);
 }
 
 function onMouseMove(e) {
@@ -353,7 +353,7 @@ function remoteViewConnect() {
   });
 
   // Perform some actions when message is first received that support user is connected (only received by client)
-  socket.on('supportConnected', function (supportConnMessage) {
+  socket.on('supportConnected', function (_supportConnMessage) {
     if (!supportUser) {
       // First signal came back from support user after they connected,
       // send resize coordinates for support user to pick up on to adjust their view
@@ -410,7 +410,7 @@ function remoteViewConnect() {
 }
 
 // Handler for user request button
-function supportButtonClick(e) {
+function supportButtonClick(_e) {
 
   if (supportUser) {
     // Support user only has the option to disconnect and only once
@@ -433,7 +433,7 @@ function supportButtonClick(e) {
       rvDomElem.toggleSupportButton(true);
     }
   }
-};
+}
 
 // Start app after document is ready
 function startApp() {
@@ -507,6 +507,6 @@ function startApp() {
       };
     } */
   });
-};
+}
 
 startApp();
