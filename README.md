@@ -1,11 +1,22 @@
 # Remote View
 
-Provided remote view support for websites
+This project is the client application portion of a remote view web sharing application utilizing dom diffing technology similar to what's found in react-native. It traverses the dom tree to record differences in nodes over time that are then transmitted across via web sockets to be rendered within the Remote View service companion application.
 
-## Features
+## Authors
 
-TBD
+[@NateThurmond](https://github.com/NateThurmond)
 
-## Process
+## Version History
 
-TBD
+-   0.2
+    -   Modernizing and containerizing application
+-   0.1
+    -   Initial Development, Demoable
+
+## License
+
+This project is licensed under the Apache License, Version 2.0
+
+## References
+
+-   [Companion Client Remote Server Application](https://github.com/NateThurmond/remoteViewServer)
