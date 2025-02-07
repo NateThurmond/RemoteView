@@ -1,6 +1,5 @@
 import $ from 'jquery';
 /* import {rvDomElem} from './rvDomElem.js'; */
-/* import isEqual from 'lodash.isequal'; */
 window.jQuery = $;
 window.$ = $;
 
@@ -508,12 +507,6 @@ class RvDomDiff {
         if (!justStore) {
 
           callback(obj.vDomStorage);
-
-          /* if (isEqual(prevDom, obj.vDomStorage)) {
-            callback({});
-          } else {
-            callback(obj.vDomStorage);
-          } */
         } else {
           callback({});
         }

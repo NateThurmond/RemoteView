@@ -1,6 +1,5 @@
 import $ from 'jquery';
 /* import {rvDomElem} from './rvDomElem.js'; */
-/* import isEqual from 'lodash.isequal'; */
 window.jQuery = $;
 window.$ = $;
 
@@ -307,8 +306,8 @@ class RvDomDiff {
 
     // If either item is a canvas, it is more efficient to just redraw than
     // determine if their is difference in canvas data
-    if ((typeof (node1.type !== 'undefined') && node1.type === 'canvas') ||
-      (typeof (node2.type !== 'undefined') && node2.type === 'canvas')) {
+    if ((typeof node1.type !== 'undefined' && node1.type === 'canvas') ||
+      (typeof node2.type !== 'undefined' && node2.type === 'canvas')) {
       return true;
     }
 
@@ -457,12 +456,6 @@ class RvDomDiff {
         if (!justStore) {
 
           callback(obj.vDomStorage);
-
-          /* if (isEqual(prevDom, obj.vDomStorage)) {
-            callback({});
-          } else {
-            callback(obj.vDomStorage);
-          } */
         } else {
           callback({});
         }
