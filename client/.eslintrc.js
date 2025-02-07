@@ -1,5 +1,5 @@
 module.exports = {
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
   extends: [
     'eslint:recommended'
   ],
@@ -11,16 +11,22 @@ module.exports = {
   rules: {
     // Allow console logs
     'no-console': 'off',
+
     // Enforce 2 spaces for indentation
     'indent': ['error', 2, { SwitchCase: 1 }],
+
     // Disallow trailing whitespace
     'no-trailing-spaces': 'error',
+
     // Enforce single space after colon in object literals
     'key-spacing': ['error', { beforeColon: false, afterColon: true }],
+
     // Enforce spacing after commas
     'comma-spacing': ['error', { before: false, after: true }],
+
     // Require a space before blocks (the curly brace)
     'space-before-blocks': ['error', 'always'],
+
     // Allow ignoring unused vars with underscore prefix
     'no-unused-vars': [
       'error',

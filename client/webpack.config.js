@@ -1,51 +1,62 @@
-/* global __dirname, require, module*/
-
-const webpack = require('webpack');
-const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
+// webpack.config.js
 const path = require('path');
-const env = require('yargs').argv.env; // use --env with webpack 2
-const pkg = require('./package.json');
+const yargs = require('yargs');
+const ESLintPlugin = require('eslint-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
-let libraryName = "remoteView";
+const env = yargs.argv.env; // e.g. `--env build` or `--env dev`
+const libraryName = 'remoteView';
+const isProduction = env === 'build';
 
-let plugins = [], outputFile;
+module.exports = {
+  // Define "mode" so you don't get warnings:
+  mode: isProduction ? 'production' : 'development',
 
-if (env === 'build') {
-  plugins.push(new UglifyJsPlugin({ minimize: true }));
-  outputFile = libraryName + '.min.js';
-} else {
-  outputFile = libraryName + '.js';
-}
+  entry: path.resolve(__dirname, 'src/index.js'),
 
-const config = {
-  entry: __dirname + '/src/index.js',
-  devtool: 'source-map',
   output: {
-    path: __dirname + '/lib',
-    filename: outputFile,
+    path: path.resolve(__dirname, 'lib'),
+    filename: isProduction
+      ? `${libraryName}.min.js`
+      : `${libraryName}.js`,
     library: libraryName,
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
+
+  // For source maps:
+  devtool: 'source-map',
+
   module: {
     rules: [
+      // Transpile JS with Babel
       {
-        test: /(\.jsx|\.js)$/,
-        loader: 'babel-loader',
-        exclude: /(node_modules|bower_components)/
-      },
-      {
-        test: /(\.jsx|\.js)$/,
-        loader: 'eslint-loader',
+        test: /\.(js|jsx)$/,
+        use: 'babel-loader',
         exclude: /node_modules/
       }
     ]
   },
-  resolve: {
-    modules: [path.resolve('./node_modules'), path.resolve('./src')],
-    extensions: ['.json', '.js']
+
+  // ESLint is now a plugin rather than a loader
+  plugins: [
+    new ESLintPlugin({
+      extensions: ['js', 'jsx'],
+    })
+  ],
+
+  // Use Terser for minification in production
+  optimization: {
+    minimize: isProduction,
+    minimizer: [new TerserPlugin()]
   },
-  plugins: plugins
+
+  resolve: {
+    extensions: ['.js', '.json'],
+    modules: [
+      path.resolve('./node_modules'),
+      path.resolve('./src')
+    ]
+  }
 };
 
-module.exports = config;
