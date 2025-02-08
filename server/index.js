@@ -1,15 +1,30 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const endUser_App = express();
 const support_App = express();
 const http = require('http');
+
+// Enable CORS for all routes
+endUser_App.use(cors());
+support_App.use(cors());
 
 // Create server to listen for end-user requests and support personnel requests
 let endUser_Server = http.createServer(endUser_App);
 let support_Server = http.createServer(support_App);
 
-const endUser_Io = require('socket.io')(endUser_Server);
-const support_Io = require('socket.io')(support_Server);
+const endUser_Io = require('socket.io')(endUser_Server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+const support_Io = require('socket.io')(support_Server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 const endUser_Port = process.env.END_USER_PORT;
 const support_Port = process.env.SUPPORT_PORT;

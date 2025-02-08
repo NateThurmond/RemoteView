@@ -9,6 +9,7 @@
     "support"
   ],
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "4.21.x",
     "socket.io": "^4.8.1"
