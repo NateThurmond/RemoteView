@@ -1,4 +1,4 @@
-
+require('dotenv').config();
 const express = require('express');
 const endUser_App = express();
 const support_App = express();
@@ -11,8 +11,8 @@ let support_Server = http.createServer(support_App);
 const endUser_Io = require('socket.io')(endUser_Server);
 const support_Io = require('socket.io')(support_Server);
 
-const endUser_Port = process.env.PORT || 3000;
-const support_Port = 3001;
+const endUser_Port = process.env.END_USER_PORT;
+const support_Port = process.env.SUPPORT_PORT;
 
 // Set both apps/servers to use content from public dir of this server
 endUser_App.use(express.static(__dirname + '/public'));

@@ -8,8 +8,9 @@
     "whiteboard"
   ],
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "4.9.x",
-    "socket.io": "latest"
+    "socket.io": "^4.8.1"
   },
   "scripts": {
     "start": "node index"
