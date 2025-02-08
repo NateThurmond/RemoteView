@@ -26,6 +26,7 @@
     "@babel/register": "^7.25.9",
     "babel-loader": "^9.2.1",
     "chai": "^5.1.2",
+    "dotenv-webpack": "^8.1.0",
     "eslint": "^9.19.0",
     "eslint-webpack-plugin": "^4.2.0",
     "mocha": "^11.1.0",

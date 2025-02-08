@@ -5,9 +5,9 @@ import {rvDomDiff} from './rvDomDiff.js';
 import {rvDomElem} from './rvDomElem.js';
 
 // Our servers
-let supportServer = 'http://nate.sytes.net:3001';
+let supportServer = process.env.SUPPORT_SERVER;
 
-let clientServer = 'http://nate.sytes.net:3000';
+let clientServer = process.env.CLIENT_SERVER;
 
 let selectedServer = clientServer;
 

@@ -1,5 +1,6 @@
 // webpack.config.js
 const path = require('path');
+const Dotenv = require('dotenv-webpack');
 const yargs = require('yargs');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -40,6 +41,7 @@ module.exports = {
 
   // ESLint is now a plugin rather than a loader
   plugins: [
+    new Dotenv(),
     new ESLintPlugin({
       extensions: ['js', 'jsx'],
     })
