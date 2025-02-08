@@ -16,7 +16,7 @@ module.exports = {
   entry: path.resolve(__dirname, 'src/index.js'),
 
   output: {
-    path: path.resolve(__dirname, 'lib'),
+    path: path.resolve(__dirname, 'dist'),
     filename: isProduction
       ? `${libraryName}.min.js`
       : `${libraryName}.js`,

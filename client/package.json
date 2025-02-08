@@ -2,7 +2,7 @@
   "name": "remoteView",
   "version": "1.0.0",
   "description": "Provide remote support for websites",
-  "main": "lib/remoteView.js",
+  "main": "dist/remoteView.js",
   "scripts": {
     "build": "webpack --env dev && webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
