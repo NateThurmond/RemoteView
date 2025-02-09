@@ -5,9 +5,9 @@ import {rvDomDiff} from './rvDomDiff.js';
 import {rvDomElem} from './rvDomElem.js';
 
 // Our servers
-let supportServer = process.env.SUPPORT_SERVER;
+let supportServer = `${process.env.SUPPORT_SERVER}:${process.env.SOCKET_SERVER_PORT}`;
 
-let clientServer = process.env.CLIENT_SERVER;
+let clientServer = `${process.env.SUPPORT_SERVER}:${process.env.SUPPORT_SERVER_PORT}`;
 
 let selectedServer = clientServer;
 

@@ -9,6 +9,7 @@ This project is the client application portion of a remote view web sharing appl
 ## Version History
 
 -   0.2
+    -   Consolidating Client/Server repositories
     -   Modernizing and containerizing application
 -   0.1
     -   Initial Development, Demoable

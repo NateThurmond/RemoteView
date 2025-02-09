@@ -16358,8 +16358,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 // Our servers
-var supportServer = "http://127.0.0.1:4001";
-var clientServer = "http://127.0.0.1:4000";
+var supportServer = "".concat("http://127.0.0.1", ":").concat("4001");
+var clientServer = "".concat("http://127.0.0.1", ":").concat("4000");
 var selectedServer = clientServer;
 
 // Socket connection, initialized when user clicks button for support

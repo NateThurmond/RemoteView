@@ -41,7 +41,10 @@ module.exports = {
 
   // ESLint is now a plugin rather than a loader
   plugins: [
-    new Dotenv(),
+    new Dotenv({
+      path: path.resolve(__dirname, '../.env'), // 👈 Explicitly define the path
+      systemvars: true // 👈 Allows system environment variables as a fallback
+    }),
     new ESLintPlugin({
       extensions: ['js', 'jsx'],
     })
