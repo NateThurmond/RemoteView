@@ -1,0 +1,22 @@
+{
+  "name": "remoteViewServer",
+  "version": "2.0.0",
+  "description": "Provide remote support for websites",
+  "main": "index.js",
+  "keywords": [
+    "socket.io",
+    "remote",
+    "support"
+  ],
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "4.21.x",
+    "socket.io": "^4.8.1"
+  },
+  "scripts": {
+    "start": "node index"
+  },
+  "author": "Nathan Thurmond",
+  "license": "MIT"
+}
