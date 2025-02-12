@@ -1,0 +1,27 @@
+services:
+  client-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: client-builder
+    volumes:
+      - ./client:/app/client
+      - .env:/app/client/.env
+      # - /localProject/remoteView.min.js:/app/client/dist/remoteView.min.js # Point to localhost site for easy access (DEV)
+    env_file:
+      - .env
+    command: ["npm", "run", "build"]
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${SUPPORT_SERVER_PORT}:${SUPPORT_SERVER_PORT}" # <- Uses .env value
+      - "${SOCKET_SERVER_PORT}:${SOCKET_SERVER_PORT}" # <- Uses .env value
+    volumes:
+      - ./server:/app/server
+      - .env:/app/server/.env
+    env_file:
+      - .env
+
