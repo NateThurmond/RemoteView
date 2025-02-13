@@ -4,6 +4,7 @@
   "description": "Provide remote support for websites",
   "main": "dist/remoteView.js",
   "scripts": {
+    "docker:build": "docker-compose run --rm client-builder npm run build",
     "build": "webpack --env dev && webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
     "test": "mocha --require @babel/register --colors ./test/*.spec.js",

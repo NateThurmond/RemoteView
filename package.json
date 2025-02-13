@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "dockerClean": "docker-compose down --rmi all --volumes --remove-orphans && docker system prune -a --volumes --force",
+    "dockerUpFresh": "docker-compose up --build -d",
+    "clientBuild": "npm --prefix client run docker:build",
+    "serverUp": "docker-compose up -d server",
+    "serverDown": "docker-compose down server",
+    "serverBuild": "docker-compose up -d server --build"
+  }
+}
