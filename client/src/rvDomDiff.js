@@ -161,6 +161,18 @@ class RvDomDiff {
     diffObj['attrs'] = {};
     diffObj['data'] = {};
 
+    /* OPTIONAL - to save on bandwith, we have the option of not evaluating script content. Note that
+       this would only come into play for scripts in the body tag which is uncommon. This piece of
+       code works with the one in updateElement to not record the entire script content which can
+       be large. I leave it here as an option for future Nathan. :) */
+    // Replace script tags with placeholders instead of removing
+    // if (diffObj["type"] === "script") {
+    //   diffObj["type"] = "noscript";  // Use <noscript> as a placeholder
+    //   diffObj["attrs"]["data-script-placeholder"] = "true"; // Mark it for later identification
+    //   diffObj["children"] = []; // Scripts should not have meaningful children
+    //   return;
+    // }
+
     diffObj['data'] = $(elem).data();
 
     if ($.inArray($(elem).val(), ['undefined']) === -1) {
@@ -209,8 +221,7 @@ class RvDomDiff {
     elem.contents().each(function () {
 
       let foundNodeType = $(this)[0].nodeType;
-
-      let foundNodeName = $(this)[0].nodeName;
+      let foundNodeName = $(this)[0].nodeName.toLowerCase();
 
       if ($.inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1) {
         diffObj['children'][childCounter] = {'type': '#text', 'data': null, 'attrs': null, 'children': ['']};
@@ -250,7 +261,6 @@ class RvDomDiff {
 
     bodyClone.find('#remoteViewSupportRequestButton').remove();
     bodyClone.find('#remoteViewCursor').remove();
-    bodyClone.find('script').remove();
 
     let vDomObj = {'type': null, 'data': null, 'attrs': null, 'children': []};
 
@@ -292,11 +302,28 @@ class RvDomDiff {
   }
 
   attrChanged(node1, node2) {
-    if (typeof (node2.attrs) === 'undefined' && typeof (node1.attrs) === 'undefined') {
+    if (!node1.attrs && !node2.attrs) {
       return false;
     }
 
-    return JSON.stringify(node1.attrs) !== JSON.stringify(node2.attrs);
+    // Ensure both have attributes before comparison
+    if (!node1.attrs && !node2.attrs) {
+      return false; // Neither has attributes, so no change
+    }
+    if (!node1.attrs || !node2.attrs) {
+      return true; // One has attributes while the other does not, register as changed
+    }
+
+    // Sort attributes by key to prevent order-related false positives
+    const orderedAttrs = (attrs) => Object.keys(attrs).sort().reduce((obj, key) => {
+      obj[key] = attrs[key];
+      return obj;
+    }, {});
+
+    const sortedAttrs1 = orderedAttrs(node1.attrs);
+    const sortedAttrs2 = orderedAttrs(node2.attrs);
+
+    return JSON.stringify(sortedAttrs1) !== JSON.stringify(sortedAttrs2);
   }
 
   dataChanged(node1, node2) {
@@ -370,8 +397,22 @@ class RvDomDiff {
 
     let obj = this;
 
+    // Some sanity checks
+    if (!parent || typeof parent === "undefined" || !parent[0] || parent.length === 0 || !parent[0].nodeType) {
+      return;
+    }
+
+    /* OPTIONAL - to save on bandwith, we have the option of not evaluating script content. Note that
+      this would only come into play for scripts in the body tag which is uncommon. This piece of
+      code works with the one in listIterate to not record the entire script content which can
+      be large. I leave it here as an option for future Nathan. :) */
+    // Preserve script placeholders instead of skipping
+    // if (newNode?.type === "noscript" && newNode?.attrs?.["data-script-placeholder"]) {
+    //   oldNode = oldNode || { type: "noscript", attrs: { "data-script-placeholder": "true" }, children: [] };
+    // }
+
     let foundNodeType = parent[0].nodeType;
-    let foundNodeName = parent[0].nodeName;
+    let foundNodeName = parent[0].nodeName.toLowerCase();
 
     if (!initialCall) {
       if ($.inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1 || (foundNodeType === 3 &&
@@ -391,9 +432,8 @@ class RvDomDiff {
         obj.applyData($('body'), newNode.data);
       }
 
-      const newLength = newNode.children.length;
-
-      const oldLength = oldNode.children.length;
+      const newLength = (newNode?.children || []).length;
+      const oldLength = (oldNode?.children || []).length;
 
       for (let i = 0; i < newLength || i < oldLength; i++) {
         obj.updateElement(
@@ -422,9 +462,8 @@ class RvDomDiff {
         obj.applyData(parent.contents().eq(index), newNode.data);
       }
 
-      const newLength = newNode.children.length;
-
-      const oldLength = oldNode.children.length;
+      const newLength = (newNode?.children || []).length;
+      const oldLength = (oldNode?.children || []).length;
 
       for (let i = 0; i < newLength || i < oldLength; i++) {
         obj.updateElement(

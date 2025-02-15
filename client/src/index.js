@@ -282,6 +282,11 @@ function remoteViewDomUpdate(updatedDom) {
       // socket.compress(true).emit('domUpdate',
       //  {'domUpdate': JSON.stringify(updatedDom)});
     } else {
+
+      // Log the diff size if needed. For more complex sites this could be a factor
+      // const diffSize = new Blob([JSON.stringify(updatedDom)]).size;  // Convert to bytes
+      // console.log(`Diff size: ${diffSize} bytes`);
+
       socket.compress(true).emit('domUpdate',
         {'domUpdate': updatedDom});
     }

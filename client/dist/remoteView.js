@@ -582,6 +582,9 @@ var RvDomDiff = /*#__PURE__*/function () {
       var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
       var initialCall = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
       var obj = this;
+      if (!parent || typeof parent === 'undefined' || parent.length === 0 || !parent[0].nodeType) {
+        console.log('Parent not found', parent, parent[0]);
+      }
       var foundNodeType = parent[0].nodeType;
       var foundNodeName = parent[0].nodeName;
       if (!initialCall) {
@@ -16358,8 +16361,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 // Our servers
-var supportServer = "".concat("http://127.0.0.1", ":").concat("4001");
-var clientServer = "".concat("http://127.0.0.1", ":").concat("4000");
+var supportServer = "".concat("MISSING_ENV_VAR".SUPPORT_SERVER, ":").concat("MISSING_ENV_VAR".SOCKET_SERVER_PORT);
+var clientServer = "".concat("MISSING_ENV_VAR".SUPPORT_SERVER, ":").concat("MISSING_ENV_VAR".SUPPORT_SERVER_PORT);
 var selectedServer = clientServer;
 
 // Socket connection, initialized when user clicks button for support
