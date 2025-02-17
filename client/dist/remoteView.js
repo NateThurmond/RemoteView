@@ -382,6 +382,19 @@ var RvDomDiff = /*#__PURE__*/function () {
       diffObj['type'] = elem.prop('nodeName').toLowerCase();
       diffObj['attrs'] = {};
       diffObj['data'] = {};
+
+      /* OPTIONAL - to save on bandwith, we have the option of not evaluating script content. Note that
+         this would only come into play for scripts in the body tag which is uncommon. This piece of
+         code works with the one in updateElement to not record the entire script content which can
+         be large. I leave it here as an option for future Nathan. :) */
+      // Replace script tags with placeholders instead of removing
+      // if (diffObj["type"] === "script") {
+      //   diffObj["type"] = "noscript";  // Use <noscript> as a placeholder
+      //   diffObj["attrs"]["data-script-placeholder"] = "true"; // Mark it for later identification
+      //   diffObj["children"] = []; // Scripts should not have meaningful children
+      //   return;
+      // }
+
       diffObj['data'] = jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).data();
       if (jquery__WEBPACK_IMPORTED_MODULE_0___default().inArray(jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).val(), ['undefined']) === -1) {
         diffObj['attrs']['val'] = jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).val();
@@ -420,7 +433,7 @@ var RvDomDiff = /*#__PURE__*/function () {
       var childCounter = 0;
       elem.contents().each(function () {
         var foundNodeType = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this)[0].nodeType;
-        var foundNodeName = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this)[0].nodeName;
+        var foundNodeName = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this)[0].nodeName.toLowerCase();
         if (jquery__WEBPACK_IMPORTED_MODULE_0___default().inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1) {
           diffObj['children'][childCounter] = {
             'type': '#text',
@@ -467,7 +480,6 @@ var RvDomDiff = /*#__PURE__*/function () {
       });
       bodyClone.find('#remoteViewSupportRequestButton').remove();
       bodyClone.find('#remoteViewCursor').remove();
-      bodyClone.find('script').remove();
       var vDomObj = {
         'type': null,
         'data': null,
@@ -507,10 +519,28 @@ var RvDomDiff = /*#__PURE__*/function () {
   }, {
     key: "attrChanged",
     value: function attrChanged(node1, node2) {
-      if (typeof node2.attrs === 'undefined' && typeof node1.attrs === 'undefined') {
+      if (!node1.attrs && !node2.attrs) {
         return false;
       }
-      return JSON.stringify(node1.attrs) !== JSON.stringify(node2.attrs);
+
+      // Ensure both have attributes before comparison
+      if (!node1.attrs && !node2.attrs) {
+        return false; // Neither has attributes, so no change
+      }
+      if (!node1.attrs || !node2.attrs) {
+        return true; // One has attributes while the other does not, register as changed
+      }
+
+      // Sort attributes by key to prevent order-related false positives
+      var orderedAttrs = function orderedAttrs(attrs) {
+        return Object.keys(attrs).sort().reduce(function (obj, key) {
+          obj[key] = attrs[key];
+          return obj;
+        }, {});
+      };
+      var sortedAttrs1 = orderedAttrs(node1.attrs);
+      var sortedAttrs2 = orderedAttrs(node2.attrs);
+      return JSON.stringify(sortedAttrs1) !== JSON.stringify(sortedAttrs2);
     }
   }, {
     key: "dataChanged",
@@ -582,11 +612,23 @@ var RvDomDiff = /*#__PURE__*/function () {
       var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
       var initialCall = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
       var obj = this;
-      if (!parent || typeof parent === 'undefined' || parent.length === 0 || !parent[0].nodeType) {
-        console.log('Parent not found', parent, parent[0]);
+
+      // Some sanity checks
+      if (!parent || typeof parent === "undefined" || !parent[0] || parent.length === 0 || !parent[0].nodeType) {
+        return;
       }
+
+      /* OPTIONAL - to save on bandwith, we have the option of not evaluating script content. Note that
+        this would only come into play for scripts in the body tag which is uncommon. This piece of
+        code works with the one in listIterate to not record the entire script content which can
+        be large. I leave it here as an option for future Nathan. :) */
+      // Preserve script placeholders instead of skipping
+      // if (newNode?.type === "noscript" && newNode?.attrs?.["data-script-placeholder"]) {
+      //   oldNode = oldNode || { type: "noscript", attrs: { "data-script-placeholder": "true" }, children: [] };
+      // }
+
       var foundNodeType = parent[0].nodeType;
-      var foundNodeName = parent[0].nodeName;
+      var foundNodeName = parent[0].nodeName.toLowerCase();
       if (!initialCall) {
         if (jquery__WEBPACK_IMPORTED_MODULE_0___default().inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1 || foundNodeType === 3 && foundNodeName === '#text') {
           parent = parent.parent();
@@ -600,8 +642,8 @@ var RvDomDiff = /*#__PURE__*/function () {
         if (obj.dataChanged(newNode, oldNode)) {
           obj.applyData(jquery__WEBPACK_IMPORTED_MODULE_0___default()('body'), newNode.data);
         }
-        var newLength = newNode.children.length;
-        var oldLength = oldNode.children.length;
+        var newLength = ((newNode === null || newNode === void 0 ? void 0 : newNode.children) || []).length;
+        var oldLength = ((oldNode === null || oldNode === void 0 ? void 0 : oldNode.children) || []).length;
         for (var i = 0; i < newLength || i < oldLength; i++) {
           obj.updateElement(jquery__WEBPACK_IMPORTED_MODULE_0___default()('body'), newNode.children[i], oldNode.children[i], i);
         }
@@ -621,8 +663,8 @@ var RvDomDiff = /*#__PURE__*/function () {
         if (obj.dataChanged(newNode, oldNode)) {
           obj.applyData(parent.contents().eq(index), newNode.data);
         }
-        var _newLength = newNode.children.length;
-        var _oldLength = oldNode.children.length;
+        var _newLength = ((newNode === null || newNode === void 0 ? void 0 : newNode.children) || []).length;
+        var _oldLength = ((oldNode === null || oldNode === void 0 ? void 0 : oldNode.children) || []).length;
         for (var _i = 0; _i < _newLength || _i < _oldLength; _i++) {
           obj.updateElement(parent.contents().eq(index), newNode.children[_i], oldNode.children[_i], _i);
         }
@@ -16361,8 +16403,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 // Our servers
-var supportServer = "".concat("MISSING_ENV_VAR".SUPPORT_SERVER, ":").concat("MISSING_ENV_VAR".SOCKET_SERVER_PORT);
-var clientServer = "".concat("MISSING_ENV_VAR".SUPPORT_SERVER, ":").concat("MISSING_ENV_VAR".SUPPORT_SERVER_PORT);
+var supportServer = "".concat("http://127.0.0.1", ":").concat("4001");
+var clientServer = "".concat("http://127.0.0.1", ":").concat("4000");
 var selectedServer = clientServer;
 
 // Socket connection, initialized when user clicks button for support
@@ -16646,6 +16688,10 @@ function remoteViewDomUpdate(updatedDom) {
       // socket.compress(true).emit('domUpdate',
       //  {'domUpdate': JSON.stringify(updatedDom)});
     } else {
+      // Log the diff size if needed. For more complex sites this could be a factor
+      // const diffSize = new Blob([JSON.stringify(updatedDom)]).size;  // Convert to bytes
+      // console.log(`Diff size: ${diffSize} bytes`);
+
       socket.compress(true).emit('domUpdate', {
         'domUpdate': updatedDom
       });
