@@ -75,15 +75,24 @@ function onEndUser_Connection(socket) {
     // The client id already exists, page has been redirected from their end
     console.log('redirecting support user to new page for client ' + endUser_Id + ' to ' + endUser_DocumentUrl);
 
+    const supportSocketId = endUsers[endUser_Id]['supportUser_SocketId'];
+    const endUserSocketId = endUsers[endUser_Id]['endUser_SocketId'];
+
     // Close this support user and end user socket id, they will be restablished on new connection
-    if (endUsers[endUser_Id]['supportUser_SocketId'] != null && endUsers[endUser_Id]['supportUser_SocketId'] != '') {
-      // disconnectQuiet
-      // support_Io.to(endUsers[endUser_Id]['supportUser_SocketId']).emit('disconnectQuiet', {'socketId':endUsers[endUser_Id]['supportUser_SocketId']});
-      delete support_Io.sockets.connected[endUsers[endUser_Id]['supportUser_SocketId']];
+    if (supportSocketId != null && supportSocketId != '') {
+      // Gracefully disconnect support user's socket
+      const supportSocket = support_Io.sockets.sockets.get(supportSocketId);
+      if (supportSocket) {
+        supportSocket.disconnect();
+      }
     }
-    if (endUsers[endUser_Id]['endUser_SocketId'] != null && endUsers[endUser_Id]['endUser_SocketId'] != '') {
-      // endUser_Io.to(endUsers[endUser_Id]['endUser_SocketId']).emit('disconnectQuiet', {'socketId':endUsers[endUser_Id]['endUser_SocketId']});
-      delete endUser_Io.sockets.connected[endUsers[endUser_Id]['endUser_SocketId']];
+    if (endUserSocketId != null && endUserSocketId != '') {
+      // Gracefully disconnect end user's socket
+      const endUserSocket = endUser_Io.sockets.sockets.get(endUserSocketId);
+      // Gracefully disconnect support user's socket
+      if (endUserSocket) {
+        endUserSocket.disconnect();
+      }
     }
 
     // Set up redirected client to use the new socket id and redirect url
@@ -124,7 +133,10 @@ function onEndUser_Connection(socket) {
     for (var endUser_Id in endUsers) {
       let foundSupportUser_SocketId = endUsers[endUser_Id]['supportUser_SocketId'];
       if (endUser_Id == disconnectEndUser_Id && foundSupportUser_SocketId != '' && foundSupportUser_SocketId != null) {
-        support_Io.to(foundSupportUser_SocketId).emit('disconnect');
+        const socketToDisconnect = support_Io.sockets.sockets.get(foundSupportUser_SocketId);
+        if (socketToDisconnect) {
+          socketToDisconnect.disconnect();
+        }
         break;
       }
     }
@@ -184,7 +196,10 @@ function onSupportUser_Connection(socket) {
       let foundSupportUser_SocketId = endUsers[endUser_Id]['supportUser_SocketId'];
       let foundEndUser_SocketId = endUsers[endUser_Id]['endUser_SocketId'];
       if (foundSupportUser_SocketId == socket.id && foundEndUser_SocketId != '' && foundEndUser_SocketId != null) {
-        endUser_Io.to(foundEndUser_SocketId).emit('disconnect', data);
+        const socketToDisconnect = endUser_Io.sockets.sockets.get(foundEndUser_SocketId);
+        if (socketToDisconnect) {
+          socketToDisconnect.disconnect();
+        }
         console.log('found the end user and removing them');
         delete endUsers[endUser_Id];
         break;
