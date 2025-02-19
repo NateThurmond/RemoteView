@@ -44,6 +44,11 @@ module.exports = {
     new Dotenv(),
     new ESLintPlugin({
       extensions: ['js', 'jsx'],
+      overrideConfig: {
+        rules: {
+          "no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }]
+        }
+      }
     })
   ],
 
