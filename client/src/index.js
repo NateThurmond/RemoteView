@@ -1,8 +1,10 @@
 import io from 'socket.io-client';
-import $ from 'jquery';
+import jQuery from 'jquery';
 import Helper from './helper.js';
 import {rvDomDiff} from './rvDomDiff.js';
 import {rvDomElem} from './rvDomElem.js';
+
+const _$ = jQuery.noConflict(true);
 
 // Our servers
 let supportServer = `${process.env.SUPPORT_SERVER}:${process.env.SOCKET_SERVER_PORT}`;
@@ -129,8 +131,8 @@ function onResize() {
   if (!supportUser) {
     socket.compress(true).emit('resize', {'windowInnerWidth': window.innerWidth,
       'windowInnerHeight': window.innerHeight, 'windowOuterWidth': window.outerWidth,
-      'windowOuterHeight': window.outerHeight, 'htmlWidth': $('html').width(),
-      'htmlHeight': $('html').height()});
+      'windowOuterHeight': window.outerHeight, 'htmlWidth': _$('html').width(),
+      'htmlHeight': _$('html').height()});
   }
 }
 
@@ -242,7 +244,7 @@ function remoteViewDisconnect() {
     socket.compress(true).emit('disconnectSupport', {'supportUser_Id': supportUserId});
 
     // Clear screen for support user on disconnect
-    $('html').empty();
+    _$('html').empty();
   } else {
     // Send disconnect
     socket.compress(true).emit('disconnectClient', {'clientId': clientId});
@@ -275,7 +277,7 @@ function remoteViewDisconnect() {
 
 // Function to transmit dom updates
 function remoteViewDomUpdate(updatedDom) {
-  if (!($.isEmptyObject(updatedDom)) && socket !== null) {
+  if (!(_$.isEmptyObject(updatedDom)) && socket !== null) {
     if (supportUser) {
       // CURRENTLY ONLY TRANSFERRING DOM UPDATES FROM CLIENT TO SUPPORT
       // MAY CHANGE BACK LATER
@@ -406,8 +408,8 @@ function remoteViewConnect() {
 
   // When client resizes window, adjust support view to same size
   socket.on('resize', function (windowDim) {
-    $('html').css('width', windowDim.windowInnerWidth + 'px');
-    $('html').css('height', windowDim.windowInnerHeight + 'px');
+    _$('html').css('width', windowDim.windowInnerWidth + 'px');
+    _$('html').css('height', windowDim.windowInnerHeight + 'px');
   });
 
   // When receiving dom updates pass to function to apply them
@@ -425,7 +427,7 @@ function supportButtonClick(_e) {
     rvDomElem.removeSupportButton();
     rvDomElem.removeSupportCursor();
   } else {
-    // if ($('#remoteViewSupportRequestButton').html() === 'Disable Remote View') {
+    // if (_$('#remoteViewSupportRequestButton').html() === 'Disable Remote View') {
     if (rvDomElem.supportButtonActive()) {
       remoteViewDisconnect();
 
@@ -450,10 +452,10 @@ function startApp() {
     supportUserId = Helper.getUrlParameter('supportUser_Id');
     passedClientId = Helper.getUrlParameter('endUser_Id');
     reconnectSupport = Helper.getUrlParameter('reconnect');
-    supportUser = ($.inArray(supportUserId, ['', 'null', null]) === -1 && passedClientId !== '');
+    supportUser = (_$.inArray(supportUserId, ['', 'null', null]) === -1 && passedClientId !== '');
 
     // Create reference to document body
-    rvDomElem.docBody($('body'));
+    rvDomElem.docBody(_$('body'));
 
     // Create the support button and cursor
     rvDomElem.createSupportButton();
@@ -491,7 +493,7 @@ function startApp() {
     rvDomElem.appendSupportCursor();
 
     // Add listener for support button click
-    $('#' + rvDomElem.supportButtonId()).on('mousedown', supportButtonClick);
+    _$('#' + rvDomElem.supportButtonId()).on('mousedown', supportButtonClick);
 
     // If cookie was previously set launch remote view and send signal to update support view
     if (redirectClientView) {

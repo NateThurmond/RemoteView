@@ -1,7 +1,8 @@
-import $ from 'jquery';
+import jQuery from 'jquery';
+const _$ = jQuery.noConflict(true);
 /* import {rvDomElem} from './rvDomElem.js'; */
-window.jQuery = $;
-window.$ = $;
+// window.jQuery = $;
+// window.$ = $;
 
 class RvDomDiff {
   constructor() {
@@ -136,7 +137,7 @@ class RvDomDiff {
 
       try {
         obj.deliveredDoms.splice(domUpdateInd, 1);
-        obj.updateElement($('body'), domUpdateParsed, prevDom, 0, true);
+        obj.updateElement(_$('body'), domUpdateParsed, prevDom, 0, true);
         obj.vDomStorage = domUpdateParsed;
       } catch (e) {
         console.log(e);
@@ -161,10 +162,10 @@ class RvDomDiff {
     diffObj['attrs'] = {};
     diffObj['data'] = {};
 
-    diffObj['data'] = $(elem).data();
+    diffObj['data'] = _$(elem).data();
 
-    if ($.inArray($(elem).val(), ['undefined']) === -1) {
-      diffObj['attrs']['val'] = $(elem).val();
+    if (_$.inArray(_$(elem).val(), ['undefined']) === -1) {
+      diffObj['attrs']['val'] = _$(elem).val();
     }
 
     if (diffObj['type'] === 'canvas') {
@@ -192,13 +193,13 @@ class RvDomDiff {
         'data': canvasElem.toDataURL()};
     }
 
-    $(elem).each(function () {
-      $.each(this.attributes, function () {
+    _$(elem).each(function () {
+      _$.each(this.attributes, function () {
         if (this.specified) {
           diffObj['attrs'][this.name] = this.value;
 
           if (this.name === 'type' && this.value === 'checkbox') {
-            diffObj['attrs']['checked'] = $(elem).prop('checked');
+            diffObj['attrs']['checked'] = _$(elem).prop('checked');
           }
         }
       });
@@ -208,18 +209,18 @@ class RvDomDiff {
 
     elem.contents().each(function () {
 
-      let foundNodeType = $(this)[0].nodeType;
+      let foundNodeType = _$(this)[0].nodeType;
 
-      let foundNodeName = $(this)[0].nodeName;
+      let foundNodeName = _$(this)[0].nodeName;
 
-      if ($.inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1) {
+      if (_$.inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1) {
         diffObj['children'][childCounter] = {'type': '#text', 'data': null, 'attrs': null, 'children': ['']};
       } else if (foundNodeType === 3 && foundNodeName === '#text') {
         diffObj['children'][childCounter] = {'type': '#text', 'data': null, 'attrs': null,
-          'children': [$(this)[0].data]};
+          'children': [_$(this)[0].data]};
       } else {
         diffObj['children'][childCounter] = {'type': null, 'data': null, 'attrs': null, 'children': []};
-        obj.listIterate($(this), diffObj['children'][childCounter], cb);
+        obj.listIterate(_$(this), diffObj['children'][childCounter], cb);
       }
 
       childCounter++;
@@ -237,15 +238,15 @@ class RvDomDiff {
 
     let obj = this;
 
-    let bodyClone = $('body').clone(true, true).off();
+    let bodyClone = _$('body').clone(true, true).off();
 
     // Special case for selects, clone does not copy these values for selects
-    let selects = $('body').find('select');
+    let selects = _$('body').find('select');
 
-    $(selects).each(function (i) {
+    _$(selects).each(function (i) {
       let select = this;
 
-      bodyClone.find('select').eq(i).val($(select).val());
+      bodyClone.find('select').eq(i).val(_$(select).val());
     });
 
     bodyClone.find('#remoteViewSupportRequestButton').remove();
@@ -276,10 +277,10 @@ class RvDomDiff {
       .forEach(el.appendChild.bind(el));
 
     if (typeof (node.attrs) !== 'undefined') {
-      obj.applyAttr($(el), node.attrs);
+      obj.applyAttr(_$(el), node.attrs);
     }
     if (typeof (node.data) !== 'undefined') {
-      obj.applyData($(el), node.data);
+      obj.applyData(_$(el), node.data);
     }
 
     return el;
@@ -318,7 +319,7 @@ class RvDomDiff {
   applyAttr(elem, newAttrs) {
     // Remove previous attributes
     elem.each(function () {
-      $.each(this.attributes, function () {
+      _$.each(this.attributes, function () {
         if (typeof (this) !== 'undefined') {
           elem.removeAttr(this.name);
         }
@@ -425,7 +426,7 @@ class RvDomDiff {
     let foundNodeName = parent[0].nodeName;
 
     if (!initialCall) {
-      if ($.inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1 || (foundNodeType === 3 &&
+      if (_$.inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1 || (foundNodeType === 3 &&
         foundNodeName === '#text')) {
 
         parent = parent.parent();
@@ -435,11 +436,11 @@ class RvDomDiff {
     if (initialCall) {
       // Check attrs of body
       if (obj.attrChanged(newNode, oldNode)) {
-        obj.applyAttr($('body'), newNode.attrs);
+        obj.applyAttr(_$('body'), newNode.attrs);
       }
 
       if (obj.dataChanged(newNode, oldNode)) {
-        obj.applyData($('body'), newNode.data);
+        obj.applyData(_$('body'), newNode.data);
       }
 
       const newLength = newNode.children.length;
@@ -448,14 +449,14 @@ class RvDomDiff {
 
       for (let i = 0; i < newLength || i < oldLength; i++) {
         obj.updateElement(
-          $('body'),
+          _$('body'),
           newNode.children[i],
           oldNode.children[i],
           i
         );
       }
     } else if (!oldNode) {
-      parent.append($(obj.createElement(newNode)));
+      parent.append(_$(obj.createElement(newNode)));
     } else if (!newNode) {
       let elemToRemove = parent.contents().eq(index);
 
@@ -463,7 +464,7 @@ class RvDomDiff {
         elemToRemove.remove();
       }
     } else if (obj.changed(newNode, oldNode)) {
-      parent.contents().eq(index).replaceWith($(obj.createElement(newNode)));
+      parent.contents().eq(index).replaceWith(_$(obj.createElement(newNode)));
     } else if (newNode.type) {
 
       if (obj.attrChanged(newNode, oldNode)) {

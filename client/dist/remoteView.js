@@ -226,9 +226,10 @@ function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), 
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
+var _$ = jquery__WEBPACK_IMPORTED_MODULE_0___default().noConflict(true);
 /* import {rvDomElem} from './rvDomElem.js'; */
-window.jQuery = (jquery__WEBPACK_IMPORTED_MODULE_0___default());
-window.$ = (jquery__WEBPACK_IMPORTED_MODULE_0___default());
+// window.jQuery = $;
+// window.$ = $;
 var RvDomDiff = /*#__PURE__*/function () {
   function RvDomDiff() {
     _classCallCheck(this, RvDomDiff);
@@ -358,7 +359,7 @@ var RvDomDiff = /*#__PURE__*/function () {
         var prevDom = obj.vDomStorage;
         try {
           obj.deliveredDoms.splice(domUpdateInd, 1);
-          obj.updateElement(jquery__WEBPACK_IMPORTED_MODULE_0___default()('body'), domUpdateParsed, prevDom, 0, true);
+          obj.updateElement(_$('body'), domUpdateParsed, prevDom, 0, true);
           obj.vDomStorage = domUpdateParsed;
         } catch (e) {
           console.log(e);
@@ -395,9 +396,9 @@ var RvDomDiff = /*#__PURE__*/function () {
       //   return;
       // }
 
-      diffObj['data'] = jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).data();
-      if (jquery__WEBPACK_IMPORTED_MODULE_0___default().inArray(jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).val(), ['undefined']) === -1) {
-        diffObj['attrs']['val'] = jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).val();
+      diffObj['data'] = _$(elem).data();
+      if (_$.inArray(_$(elem).val(), ['undefined']) === -1) {
+        diffObj['attrs']['val'] = _$(elem).val();
       }
       if (diffObj['type'] === 'canvas') {
         // This is best method to reliably capture all canvas data but relies on selectors
@@ -420,21 +421,21 @@ var RvDomDiff = /*#__PURE__*/function () {
           'data': canvasElem.toDataURL()
         };
       }
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).each(function () {
-        jquery__WEBPACK_IMPORTED_MODULE_0___default().each(this.attributes, function () {
+      _$(elem).each(function () {
+        _$.each(this.attributes, function () {
           if (this.specified) {
             diffObj['attrs'][this.name] = this.value;
             if (this.name === 'type' && this.value === 'checkbox') {
-              diffObj['attrs']['checked'] = jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).prop('checked');
+              diffObj['attrs']['checked'] = _$(elem).prop('checked');
             }
           }
         });
       });
       var childCounter = 0;
       elem.contents().each(function () {
-        var foundNodeType = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this)[0].nodeType;
-        var foundNodeName = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this)[0].nodeName.toLowerCase();
-        if (jquery__WEBPACK_IMPORTED_MODULE_0___default().inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1) {
+        var foundNodeType = _$(this)[0].nodeType;
+        var foundNodeName = _$(this)[0].nodeName.toLowerCase();
+        if (_$.inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1) {
           diffObj['children'][childCounter] = {
             'type': '#text',
             'data': null,
@@ -446,7 +447,7 @@ var RvDomDiff = /*#__PURE__*/function () {
             'type': '#text',
             'data': null,
             'attrs': null,
-            'children': [jquery__WEBPACK_IMPORTED_MODULE_0___default()(this)[0].data]
+            'children': [_$(this)[0].data]
           };
         } else {
           diffObj['children'][childCounter] = {
@@ -455,7 +456,7 @@ var RvDomDiff = /*#__PURE__*/function () {
             'attrs': null,
             'children': []
           };
-          obj.listIterate(jquery__WEBPACK_IMPORTED_MODULE_0___default()(this), diffObj['children'][childCounter], cb);
+          obj.listIterate(_$(this), diffObj['children'][childCounter], cb);
         }
         childCounter++;
       });
@@ -470,13 +471,13 @@ var RvDomDiff = /*#__PURE__*/function () {
     key: "vDom",
     value: function vDom(cb) {
       var obj = this;
-      var bodyClone = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body').clone(true, true).off();
+      var bodyClone = _$('body').clone(true, true).off();
 
       // Special case for selects, clone does not copy these values for selects
-      var selects = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body').find('select');
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()(selects).each(function (i) {
+      var selects = _$('body').find('select');
+      _$(selects).each(function (i) {
         var select = this;
-        bodyClone.find('select').eq(i).val(jquery__WEBPACK_IMPORTED_MODULE_0___default()(select).val());
+        bodyClone.find('select').eq(i).val(_$(select).val());
       });
       bodyClone.find('#remoteViewSupportRequestButton').remove();
       bodyClone.find('#remoteViewCursor').remove();
@@ -504,10 +505,10 @@ var RvDomDiff = /*#__PURE__*/function () {
       var el = document.createElement(node.type);
       node.children.map(obj.createElement).forEach(el.appendChild.bind(el));
       if (typeof node.attrs !== 'undefined') {
-        obj.applyAttr(jquery__WEBPACK_IMPORTED_MODULE_0___default()(el), node.attrs);
+        obj.applyAttr(_$(el), node.attrs);
       }
       if (typeof node.data !== 'undefined') {
-        obj.applyData(jquery__WEBPACK_IMPORTED_MODULE_0___default()(el), node.data);
+        obj.applyData(_$(el), node.data);
       }
       return el;
     }
@@ -561,7 +562,7 @@ var RvDomDiff = /*#__PURE__*/function () {
     value: function applyAttr(elem, newAttrs) {
       // Remove previous attributes
       elem.each(function () {
-        jquery__WEBPACK_IMPORTED_MODULE_0___default().each(this.attributes, function () {
+        _$.each(this.attributes, function () {
           if (typeof this !== 'undefined') {
             elem.removeAttr(this.name);
           }
@@ -630,32 +631,32 @@ var RvDomDiff = /*#__PURE__*/function () {
       var foundNodeType = parent[0].nodeType;
       var foundNodeName = parent[0].nodeName.toLowerCase();
       if (!initialCall) {
-        if (jquery__WEBPACK_IMPORTED_MODULE_0___default().inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1 || foundNodeType === 3 && foundNodeName === '#text') {
+        if (_$.inArray(foundNodeType, [8, 4, 7, 10, 12]) !== -1 || foundNodeType === 3 && foundNodeName === '#text') {
           parent = parent.parent();
         }
       }
       if (initialCall) {
         // Check attrs of body
         if (obj.attrChanged(newNode, oldNode)) {
-          obj.applyAttr(jquery__WEBPACK_IMPORTED_MODULE_0___default()('body'), newNode.attrs);
+          obj.applyAttr(_$('body'), newNode.attrs);
         }
         if (obj.dataChanged(newNode, oldNode)) {
-          obj.applyData(jquery__WEBPACK_IMPORTED_MODULE_0___default()('body'), newNode.data);
+          obj.applyData(_$('body'), newNode.data);
         }
         var newLength = ((newNode === null || newNode === void 0 ? void 0 : newNode.children) || []).length;
         var oldLength = ((oldNode === null || oldNode === void 0 ? void 0 : oldNode.children) || []).length;
         for (var i = 0; i < newLength || i < oldLength; i++) {
-          obj.updateElement(jquery__WEBPACK_IMPORTED_MODULE_0___default()('body'), newNode.children[i], oldNode.children[i], i);
+          obj.updateElement(_$('body'), newNode.children[i], oldNode.children[i], i);
         }
       } else if (!oldNode) {
-        parent.append(jquery__WEBPACK_IMPORTED_MODULE_0___default()(obj.createElement(newNode)));
+        parent.append(_$(obj.createElement(newNode)));
       } else if (!newNode) {
         var elemToRemove = parent.contents().eq(index);
         if (elemToRemove.length > 0) {
           elemToRemove.remove();
         }
       } else if (obj.changed(newNode, oldNode)) {
-        parent.contents().eq(index).replaceWith(jquery__WEBPACK_IMPORTED_MODULE_0___default()(obj.createElement(newNode)));
+        parent.contents().eq(index).replaceWith(_$(obj.createElement(newNode)));
       } else if (newNode.type) {
         if (obj.attrChanged(newNode, oldNode)) {
           obj.applyAttr(parent.contents().eq(index), newNode.attrs);
@@ -721,6 +722,7 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
 
+var _$ = jquery__WEBPACK_IMPORTED_MODULE_0___default().noConflict(true);
 var RvDomElem = /*#__PURE__*/function () {
   function RvDomElem() {
     _classCallCheck(this, RvDomElem);
@@ -751,7 +753,7 @@ var RvDomElem = /*#__PURE__*/function () {
   }, {
     key: "supportButtonActive",
     value: function supportButtonActive() {
-      return jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + this.supportButtonId()).html() === this.rvSupportButtonTexts[1];
+      return _$('#' + this.supportButtonId()).html() === this.rvSupportButtonTexts[1];
     }
   }, {
     key: "docBody",
@@ -787,11 +789,11 @@ var RvDomElem = /*#__PURE__*/function () {
       if (onOffBool === '') {
         var nextTextInd = this.rvSupportButtonTexts.indexOf(this.rvSupportButton.innerHTML) === 0 ? 1 : 0;
         this.rvSupportButton.innerHTML = this.rvSupportButtonTexts[nextTextInd];
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + this.supportButtonId()).html(this.rvSupportButtonTexts[nextTextInd]);
+        _$('#' + this.supportButtonId()).html(this.rvSupportButtonTexts[nextTextInd]);
       } else {
         var supportButtonHtml = onOffBool ? this.rvSupportButtonTexts[1] : this.rvSupportButtonTexts[0];
         this.rvSupportButton.innerHTML = supportButtonHtml;
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + this.supportButtonId()).html(supportButtonHtml);
+        _$('#' + this.supportButtonId()).html(supportButtonHtml);
       }
     }
 
@@ -803,12 +805,12 @@ var RvDomElem = /*#__PURE__*/function () {
       if (onOffBool === '') {
         var nextDisplayInd = this.rvSupportButtonTexts.indexOf(this.rvSupportButton.innerHTML) === 0 ? 1 : 0;
         this.rvSupportCursor.style.cssText = this.rvSupportCursor.style.cssText.replace('display: ' + this.rvSupportButtonTexts[Math.abs(nextDisplayInd - 1)], 'display: ' + this.rvSupportButtonTexts[nextDisplayInd]);
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + this.supportCursorId()).css('display', this.rvSupportCursorDisplays[nextDisplayInd]);
+        _$('#' + this.supportCursorId()).css('display', this.rvSupportCursorDisplays[nextDisplayInd]);
       } else {
         var supportCursorDisplayInd = onOffBool ? 1 : 0;
         var supportCursorDisplay = this.rvSupportCursorDisplays[supportCursorDisplayInd];
         this.rvSupportCursor.style.cssText = this.rvSupportCursor.style.cssText.replace('display: ' + this.rvSupportButtonTexts[Math.abs(supportCursorDisplayInd - 1)], 'display: ' + this.rvSupportButtonTexts[supportCursorDisplayInd]);
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + this.supportCursorId()).css('display', supportCursorDisplay);
+        _$('#' + this.supportCursorId()).css('display', supportCursorDisplay);
       }
     }
 
@@ -819,9 +821,9 @@ var RvDomElem = /*#__PURE__*/function () {
       var _this = this;
       var leftClick = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
       var rvDegrees = leftClick ? 'rotate(45deg)' : 'rotate(-45deg)';
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + this.supportCursorId()).css('transform', rvDegrees);
+      _$('#' + this.supportCursorId()).css('transform', rvDegrees);
       setTimeout(function () {
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + _this.supportCursorId()).css('transform', 'rotate(0deg)');
+        _$('#' + _this.supportCursorId()).css('transform', 'rotate(0deg)');
       }, 500);
     }
 
@@ -839,7 +841,7 @@ var RvDomElem = /*#__PURE__*/function () {
 
       // 'display: none; position: absolute; z-index: '
 
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + this.supportCursorId()).css({
+      _$('#' + this.supportCursorId()).css({
         'display': 'block',
         'left': x + 'px',
         'top': y + 'px'
@@ -864,14 +866,14 @@ var RvDomElem = /*#__PURE__*/function () {
   }, {
     key: "removeSupportButton",
     value: function removeSupportButton() {
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + this.supportButtonId()).remove();
+      _$('#' + this.supportButtonId()).remove();
     }
 
     // Remove support cursor
   }, {
     key: "removeSupportCursor",
     value: function removeSupportCursor() {
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + this.supportCursorId()).remove();
+      _$('#' + this.supportCursorId()).remove();
     }
   }]);
 }();
@@ -16401,6 +16403,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var _$ = jquery__WEBPACK_IMPORTED_MODULE_1___default().noConflict(true);
 
 // Our servers
 var supportServer = "".concat("http://127.0.0.1", ":").concat("4001");
@@ -16525,8 +16528,8 @@ function onResize() {
       'windowInnerHeight': window.innerHeight,
       'windowOuterWidth': window.outerWidth,
       'windowOuterHeight': window.outerHeight,
-      'htmlWidth': jquery__WEBPACK_IMPORTED_MODULE_1___default()('html').width(),
-      'htmlHeight': jquery__WEBPACK_IMPORTED_MODULE_1___default()('html').height()
+      'htmlWidth': _$('html').width(),
+      'htmlHeight': _$('html').height()
     });
   }
 }
@@ -16630,7 +16633,7 @@ function remoteViewDisconnect() {
     });
 
     // Clear screen for support user on disconnect
-    jquery__WEBPACK_IMPORTED_MODULE_1___default()('html').empty();
+    _$('html').empty();
   } else {
     // Send disconnect
     socket.compress(true).emit('disconnectClient', {
@@ -16681,7 +16684,7 @@ function remoteViewDisconnect() {
 
 // Function to transmit dom updates
 function remoteViewDomUpdate(updatedDom) {
-  if (!jquery__WEBPACK_IMPORTED_MODULE_1___default().isEmptyObject(updatedDom) && socket !== null) {
+  if (!_$.isEmptyObject(updatedDom) && socket !== null) {
     if (supportUser) {
       // CURRENTLY ONLY TRANSFERRING DOM UPDATES FROM CLIENT TO SUPPORT
       // MAY CHANGE BACK LATER
@@ -16822,8 +16825,8 @@ function remoteViewConnect() {
 
   // When client resizes window, adjust support view to same size
   socket.on('resize', function (windowDim) {
-    jquery__WEBPACK_IMPORTED_MODULE_1___default()('html').css('width', windowDim.windowInnerWidth + 'px');
-    jquery__WEBPACK_IMPORTED_MODULE_1___default()('html').css('height', windowDim.windowInnerHeight + 'px');
+    _$('html').css('width', windowDim.windowInnerWidth + 'px');
+    _$('html').css('height', windowDim.windowInnerHeight + 'px');
   });
 
   // When receiving dom updates pass to function to apply them
@@ -16840,7 +16843,7 @@ function supportButtonClick(_e) {
     _rvDomElem_js__WEBPACK_IMPORTED_MODULE_4__.rvDomElem.removeSupportButton();
     _rvDomElem_js__WEBPACK_IMPORTED_MODULE_4__.rvDomElem.removeSupportCursor();
   } else {
-    // if ($('#remoteViewSupportRequestButton').html() === 'Disable Remote View') {
+    // if (_$('#remoteViewSupportRequestButton').html() === 'Disable Remote View') {
     if (_rvDomElem_js__WEBPACK_IMPORTED_MODULE_4__.rvDomElem.supportButtonActive()) {
       remoteViewDisconnect();
 
@@ -16863,10 +16866,10 @@ function startApp() {
     supportUserId = _helper_js__WEBPACK_IMPORTED_MODULE_2__["default"].getUrlParameter('supportUser_Id');
     passedClientId = _helper_js__WEBPACK_IMPORTED_MODULE_2__["default"].getUrlParameter('endUser_Id');
     reconnectSupport = _helper_js__WEBPACK_IMPORTED_MODULE_2__["default"].getUrlParameter('reconnect');
-    supportUser = jquery__WEBPACK_IMPORTED_MODULE_1___default().inArray(supportUserId, ['', 'null', null]) === -1 && passedClientId !== '';
+    supportUser = _$.inArray(supportUserId, ['', 'null', null]) === -1 && passedClientId !== '';
 
     // Create reference to document body
-    _rvDomElem_js__WEBPACK_IMPORTED_MODULE_4__.rvDomElem.docBody(jquery__WEBPACK_IMPORTED_MODULE_1___default()('body'));
+    _rvDomElem_js__WEBPACK_IMPORTED_MODULE_4__.rvDomElem.docBody(_$('body'));
 
     // Create the support button and cursor
     _rvDomElem_js__WEBPACK_IMPORTED_MODULE_4__.rvDomElem.createSupportButton();
@@ -16903,7 +16906,7 @@ function startApp() {
     _rvDomElem_js__WEBPACK_IMPORTED_MODULE_4__.rvDomElem.appendSupportCursor();
 
     // Add listener for support button click
-    jquery__WEBPACK_IMPORTED_MODULE_1___default()('#' + _rvDomElem_js__WEBPACK_IMPORTED_MODULE_4__.rvDomElem.supportButtonId()).on('mousedown', supportButtonClick);
+    _$('#' + _rvDomElem_js__WEBPACK_IMPORTED_MODULE_4__.rvDomElem.supportButtonId()).on('mousedown', supportButtonClick);
 
     // If cookie was previously set launch remote view and send signal to update support view
     if (redirectClientView) {

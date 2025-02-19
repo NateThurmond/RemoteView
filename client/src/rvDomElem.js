@@ -1,5 +1,7 @@
-import $ from 'jquery';
+import jQuery from 'jquery';
 import Image from './image.js';
+
+const _$ = jQuery.noConflict(true);
 
 class RvDomElem {
   constructor() {
@@ -29,7 +31,7 @@ class RvDomElem {
   }
 
   supportButtonActive() {
-    return $('#' + this.supportButtonId()).html() === this.rvSupportButtonTexts[1];
+    return _$('#' + this.supportButtonId()).html() === this.rvSupportButtonTexts[1];
   }
 
   docBody(bodyElem) {
@@ -60,13 +62,13 @@ class RvDomElem {
       let nextTextInd = (this.rvSupportButtonTexts.indexOf(this.rvSupportButton.innerHTML) === 0) ? 1 : 0;
 
       this.rvSupportButton.innerHTML = this.rvSupportButtonTexts[nextTextInd];
-      $('#' + this.supportButtonId()).html(this.rvSupportButtonTexts[nextTextInd]);
+      _$('#' + this.supportButtonId()).html(this.rvSupportButtonTexts[nextTextInd]);
     } else {
       let supportButtonHtml = (onOffBool) ? this.rvSupportButtonTexts[1] :
         this.rvSupportButtonTexts[0];
 
       this.rvSupportButton.innerHTML = supportButtonHtml;
-      $('#' + this.supportButtonId()).html(supportButtonHtml);
+      _$('#' + this.supportButtonId()).html(supportButtonHtml);
     }
   }
 
@@ -80,7 +82,7 @@ class RvDomElem {
       this.rvSupportButtonTexts[Math.abs(nextDisplayInd - 1)],
       'display: ' + this.rvSupportButtonTexts[nextDisplayInd]);
 
-      $('#' + this.supportCursorId()).css('display', this.rvSupportCursorDisplays[nextDisplayInd]);
+      _$('#' + this.supportCursorId()).css('display', this.rvSupportCursorDisplays[nextDisplayInd]);
     } else {
       let supportCursorDisplayInd = (onOffBool) ? 1 : 0;
 
@@ -91,7 +93,7 @@ class RvDomElem {
       this.rvSupportButtonTexts[Math.abs(supportCursorDisplayInd - 1)],
       'display: ' + this.rvSupportButtonTexts[supportCursorDisplayInd]);
 
-      $('#' + this.supportCursorId()).css('display', supportCursorDisplay);
+      _$('#' + this.supportCursorId()).css('display', supportCursorDisplay);
     }
   }
 
@@ -99,9 +101,9 @@ class RvDomElem {
   tiltSupportCursor(leftClick = true) {
     let rvDegrees = (leftClick) ? 'rotate(45deg)' : 'rotate(-45deg)';
 
-    $('#' + this.supportCursorId()).css('transform', rvDegrees);
+    _$('#' + this.supportCursorId()).css('transform', rvDegrees);
     setTimeout(() => {
-      $('#' + this.supportCursorId()).css('transform', 'rotate(0deg)');
+      _$('#' + this.supportCursorId()).css('transform', 'rotate(0deg)');
     }, 500);
   }
 
@@ -121,7 +123,7 @@ class RvDomElem {
 
     // 'display: none; position: absolute; z-index: '
 
-    $('#' + this.supportCursorId()).css({'display': 'block', 'left': x + 'px', 'top': y + 'px'});
+    _$('#' + this.supportCursorId()).css({'display': 'block', 'left': x + 'px', 'top': y + 'px'});
   }
 
   // Append support button
@@ -136,12 +138,12 @@ class RvDomElem {
 
   // Remove support button
   removeSupportButton() {
-    $('#' + this.supportButtonId()).remove();
+    _$('#' + this.supportButtonId()).remove();
   }
 
   // Remove support cursor
   removeSupportCursor() {
-    $('#' + this.supportCursorId()).remove();
+    _$('#' + this.supportCursorId()).remove();
   }
 }
 
