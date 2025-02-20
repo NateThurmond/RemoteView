@@ -29,6 +29,12 @@ class RvDomDiff {
     // Used to process callBack within list iterate function
     this.iteratorTimer = null;
 
+    // Found invalid attribute tags (initial store of these for better performance)
+    this.invalidAttrTypesFound = new Set();
+
+    // Stores invalid attrs (these can happen depending on the site) for each node to mimimize retry logic
+    this.invalidAttrsPerNode = new Map();
+
     // Function bindings
     this.domUpdate = this.domUpdate.bind(this);
     this.createElement = this.createElement.bind(this);
@@ -343,27 +349,63 @@ class RvDomDiff {
   }
 
   applyAttr(elem, newAttrs) {
+
+    // Track node type/tag for invalid attributes (if needed)
+    let rawElem, nodeKey;
+
     // Remove previous attributes
     elem.each(function () {
       _$.each(this.attributes, function () {
-        if (typeof (this) !== 'undefined') {
+        if (typeof this !== 'undefined') {
           elem.removeAttr(this.name);
         }
       });
     });
 
-    if (newAttrs !== null && typeof (newAttrs) !== 'undefined') {
-      if (typeof newAttrs['val'] !== 'undefined') {
+    if (newAttrs) {
+      if (newAttrs['val']) {
         elem.val(newAttrs['val']);
         delete newAttrs['val'];
       }
-      if (typeof newAttrs['checked'] !== 'undefined') {
+      if (newAttrs['checked']) {
         elem.prop('checked', newAttrs['checked']);
         delete newAttrs['checked'];
       }
     }
 
-    elem.attr(newAttrs);
+    Object.keys(newAttrs).forEach(attr => {
+      if (this.invalidAttrTypesFound.has(attr)) {
+        rawElem = rawElem || (elem instanceof jQuery ? elem[0] : elem);
+        nodeKey = nodeKey || (rawElem.nodeType === 1
+          ? `${rawElem.nodeType}-${rawElem.tagName.toLowerCase()}`
+          : `${rawElem.nodeType}`);
+        if (this.invalidAttrsPerNode.has(nodeKey) && this.invalidAttrsPerNode.get(nodeKey).has(attr)) {
+          // Skip known invalid attributes for this element
+          return;
+        }
+      }
+
+      try {
+        _$(elem).attr(attr, newAttrs[attr]);
+      } catch (err) {
+        rawElem = rawElem || (elem instanceof jQuery ? elem[0] : elem);
+        nodeKey = nodeKey || (rawElem.nodeType === 1
+          ? `${rawElem.nodeType}-${rawElem.tagName.toLowerCase()}`
+          : `${rawElem.nodeType}`);
+        console.warn(`Failed adding invalid attribute: "${attr}" for`, elem, err);
+
+        // Store invalid attribute type (common to all nodes)
+        this.invalidAttrTypesFound.add(attr);
+
+        // More specifically, store this invalid attr for this node
+        if (!this.invalidAttrsPerNode.has(nodeKey)) {
+          this.invalidAttrsPerNode.set(nodeKey, new Set([attr]));
+        } else {
+          // Update cache for this node
+          this.invalidAttrsPerNode.get(nodeKey).add(attr);
+        }
+      }
+    });
   }
 
   applyData(elem, newData) {

@@ -256,6 +256,12 @@ var RvDomDiff = /*#__PURE__*/function () {
     // Used to process callBack within list iterate function
     this.iteratorTimer = null;
 
+    // Found invalid attribute tags (initial store of these for better performance)
+    this.invalidAttrTypesFound = new Set();
+
+    // Stores invalid attrs (these can happen depending on the site) for each node to mimimize retry logic
+    this.invalidAttrsPerNode = new Map();
+
     // Function bindings
     this.domUpdate = this.domUpdate.bind(this);
     this.createElement = this.createElement.bind(this);
@@ -560,6 +566,10 @@ var RvDomDiff = /*#__PURE__*/function () {
   }, {
     key: "applyAttr",
     value: function applyAttr(elem, newAttrs) {
+      var _this = this;
+      // Track node type/tag for invalid attributes (if needed)
+      var rawElem, nodeKey;
+
       // Remove previous attributes
       elem.each(function () {
         _$.each(this.attributes, function () {
@@ -568,17 +578,44 @@ var RvDomDiff = /*#__PURE__*/function () {
           }
         });
       });
-      if (newAttrs !== null && typeof newAttrs !== 'undefined') {
-        if (typeof newAttrs['val'] !== 'undefined') {
+      if (newAttrs) {
+        if (newAttrs['val']) {
           elem.val(newAttrs['val']);
           delete newAttrs['val'];
         }
-        if (typeof newAttrs['checked'] !== 'undefined') {
+        if (newAttrs['checked']) {
           elem.prop('checked', newAttrs['checked']);
           delete newAttrs['checked'];
         }
       }
-      elem.attr(newAttrs);
+      Object.keys(newAttrs).forEach(function (attr) {
+        if (_this.invalidAttrTypesFound.has(attr)) {
+          rawElem = rawElem || (elem instanceof (jquery__WEBPACK_IMPORTED_MODULE_0___default()) ? elem[0] : elem);
+          nodeKey = nodeKey || (rawElem.nodeType === 1 ? "".concat(rawElem.nodeType, "-").concat(rawElem.tagName.toLowerCase()) : "".concat(rawElem.nodeType));
+          if (_this.invalidAttrsPerNode.has(nodeKey) && _this.invalidAttrsPerNode.get(nodeKey).has(attr)) {
+            // Skip known invalid attributes for this element
+            return;
+          }
+        }
+        try {
+          _$(elem).attr(attr, newAttrs[attr]);
+        } catch (err) {
+          rawElem = rawElem || (elem instanceof (jquery__WEBPACK_IMPORTED_MODULE_0___default()) ? elem[0] : elem);
+          nodeKey = nodeKey || (rawElem.nodeType === 1 ? "".concat(rawElem.nodeType, "-").concat(rawElem.tagName.toLowerCase()) : "".concat(rawElem.nodeType));
+          console.warn("Failed adding invalid attribute: \"".concat(attr, "\" for"), elem, err);
+
+          // Store invalid attribute type (common to all nodes)
+          _this.invalidAttrTypesFound.add(attr);
+
+          // More specifically, store this invalid attr for this node
+          if (!_this.invalidAttrsPerNode.has(nodeKey)) {
+            _this.invalidAttrsPerNode.set(nodeKey, new Set([attr]));
+          } else {
+            // Update cache for this node
+            _this.invalidAttrsPerNode.get(nodeKey).add(attr);
+          }
+        }
+      });
     }
   }, {
     key: "applyData",
