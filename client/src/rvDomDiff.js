@@ -482,7 +482,7 @@ class RvDomDiff {
         obj.updateElement(
           _$('body'),
           newNode.children[i],
-          oldNode.children[i],
+          oldNode?.children?.[i] || null,
           i
         );
       }
@@ -512,7 +512,7 @@ class RvDomDiff {
         obj.updateElement(
           parent.contents().eq(index),
           newNode.children[i],
-          oldNode.children[i],
+          oldNode?.children?.[i] || null,
           i
         );
       }

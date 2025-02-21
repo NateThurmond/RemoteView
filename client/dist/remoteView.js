@@ -683,7 +683,8 @@ var RvDomDiff = /*#__PURE__*/function () {
         var newLength = ((newNode === null || newNode === void 0 ? void 0 : newNode.children) || []).length;
         var oldLength = ((oldNode === null || oldNode === void 0 ? void 0 : oldNode.children) || []).length;
         for (var i = 0; i < newLength || i < oldLength; i++) {
-          obj.updateElement(_$('body'), newNode.children[i], oldNode.children[i], i);
+          var _oldNode$children;
+          obj.updateElement(_$('body'), newNode.children[i], (oldNode === null || oldNode === void 0 || (_oldNode$children = oldNode.children) === null || _oldNode$children === void 0 ? void 0 : _oldNode$children[i]) || null, i);
         }
       } else if (!oldNode) {
         parent.append(_$(obj.createElement(newNode)));
@@ -704,7 +705,8 @@ var RvDomDiff = /*#__PURE__*/function () {
         var _newLength = ((newNode === null || newNode === void 0 ? void 0 : newNode.children) || []).length;
         var _oldLength = ((oldNode === null || oldNode === void 0 ? void 0 : oldNode.children) || []).length;
         for (var _i = 0; _i < _newLength || _i < _oldLength; _i++) {
-          obj.updateElement(parent.contents().eq(index), newNode.children[_i], oldNode.children[_i], _i);
+          var _oldNode$children2;
+          obj.updateElement(parent.contents().eq(index), newNode.children[_i], (oldNode === null || oldNode === void 0 || (_oldNode$children2 = oldNode.children) === null || _oldNode$children2 === void 0 ? void 0 : _oldNode$children2[_i]) || null, _i);
         }
       }
     }
