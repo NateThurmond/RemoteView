@@ -769,7 +769,9 @@ var RvDomElem = /*#__PURE__*/function () {
     this._docBody = null;
     this.rvSupportButton = null;
     this._supportButtonId = 'remoteViewSupportRequestButton';
-    this.rvSupportButtonTexts = ['Help and support', 'Disable Remote View'];
+    // Off/On Phone/X - See also &#128222; (phone) &#128187; (pc monitor) &#128488; (Speech Bubble)
+    this.rvSupportButtonTexts = ["&#128222;", "&#10005;"];
+    this.rvSupportButtonTitles = ["Help and support", "Disable Remote View"];
     this.rvSupportCursor = null;
     this._supportCursorId = 'remoteViewCursor';
     this.rvSupportCursorDisplays = ['none', 'block'];
@@ -792,7 +794,8 @@ var RvDomElem = /*#__PURE__*/function () {
   }, {
     key: "supportButtonActive",
     value: function supportButtonActive() {
-      return _$('#' + this.supportButtonId()).html() === this.rvSupportButtonTexts[1];
+      var buttonUnicode = "&#" + _$('#' + this.supportButtonId())[0].textContent.codePointAt(0) + ";";
+      return buttonUnicode === this.rvSupportButtonTexts[1];
     }
   }, {
     key: "docBody",
@@ -804,10 +807,19 @@ var RvDomElem = /*#__PURE__*/function () {
   }, {
     key: "createSupportButton",
     value: function createSupportButton() {
-      this.rvSupportButton = document.createElement('p');
+      this.rvSupportButton = document.createElement('div');
+      this.rvSupportButton.title = this.rvSupportButtonTitles[0];
       this.rvSupportButton.id = this.supportButtonId();
-      this.rvSupportButton.style.cssText = 'background-color: blue; width: 148px; position: ' + 'absolute; bottom: 0; right: 0; z-index: 2147483647;';
-      this.rvSupportButton.innerHTML = this.rvSupportButtonTexts[0];
+      this.rvSupportButton.className = 'rv-support-button';
+      this.rvSupportButton.style.cssText = "\n      z-index: 999999;\n      position: fixed;\n      bottom: 20px;\n      right: 20px;\n      width: 40px;\n      height: 40px;\n      background: #007BFF;\n      color: white;\n      font-size: 24px;\n      text-align: center;\n      line-height: 40px;\n      border-radius: 50%;\n      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);\n      cursor: pointer;\n      user-select: none;\n      transition: background 0.2s ease-in-out;\n    ";
+      this.rvSupportButton.innerHTML = this.rvSupportButtonTexts[0]; // Default phone icon
+
+      this.rvSupportButton.addEventListener("mouseenter", function () {
+        this.style.background = "#0056b3"; // Darker blue on hover
+      });
+      this.rvSupportButton.addEventListener("mouseleave", function () {
+        this.style.background = "#007BFF"; // Revert to original color
+      });
     }
 
     // Create the support cursor with whatever style you want
@@ -825,14 +837,14 @@ var RvDomElem = /*#__PURE__*/function () {
     key: "toggleSupportButton",
     value: function toggleSupportButton() {
       var onOffBool = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      if (onOffBool === '') {
-        var nextTextInd = this.rvSupportButtonTexts.indexOf(this.rvSupportButton.innerHTML) === 0 ? 1 : 0;
-        this.rvSupportButton.innerHTML = this.rvSupportButtonTexts[nextTextInd];
-        _$('#' + this.supportButtonId()).html(this.rvSupportButtonTexts[nextTextInd]);
-      } else {
-        var supportButtonHtml = onOffBool ? this.rvSupportButtonTexts[1] : this.rvSupportButtonTexts[0];
-        this.rvSupportButton.innerHTML = supportButtonHtml;
-        _$('#' + this.supportButtonId()).html(supportButtonHtml);
+      if (onOffBool !== '') {
+        var suppButtonMode = onOffBool === true ? 1 : 0;
+        var suppButtonIcon = this.rvSupportButtonTexts[suppButtonMode];
+        var suppButtonTitle = this.rvSupportButtonTitles[suppButtonMode];
+        this.rvSupportButton.innerHTML = suppButtonIcon;
+        this.rvSupportButton.title = suppButtonTitle;
+        _$('#' + this.supportButtonId()).html(suppButtonIcon);
+        _$('#' + this.supportButtonId()).attr('title', suppButtonTitle);
       }
     }
 
@@ -841,14 +853,9 @@ var RvDomElem = /*#__PURE__*/function () {
     key: "toggleSupportCursor",
     value: function toggleSupportCursor() {
       var onOffBool = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      if (onOffBool === '') {
-        var nextDisplayInd = this.rvSupportButtonTexts.indexOf(this.rvSupportButton.innerHTML) === 0 ? 1 : 0;
-        this.rvSupportCursor.style.cssText = this.rvSupportCursor.style.cssText.replace('display: ' + this.rvSupportButtonTexts[Math.abs(nextDisplayInd - 1)], 'display: ' + this.rvSupportButtonTexts[nextDisplayInd]);
-        _$('#' + this.supportCursorId()).css('display', this.rvSupportCursorDisplays[nextDisplayInd]);
-      } else {
-        var supportCursorDisplayInd = onOffBool ? 1 : 0;
+      if (onOffBool !== '') {
+        var supportCursorDisplayInd = onOffBool === true ? 1 : 0;
         var supportCursorDisplay = this.rvSupportCursorDisplays[supportCursorDisplayInd];
-        this.rvSupportCursor.style.cssText = this.rvSupportCursor.style.cssText.replace('display: ' + this.rvSupportButtonTexts[Math.abs(supportCursorDisplayInd - 1)], 'display: ' + this.rvSupportButtonTexts[supportCursorDisplayInd]);
         _$('#' + this.supportCursorId()).css('display', supportCursorDisplay);
       }
     }
