@@ -770,7 +770,7 @@ var RvDomElem = /*#__PURE__*/function () {
     this.rvSupportButton = null;
     this._supportButtonId = 'remoteViewSupportRequestButton';
     // Off/On Phone/X - See also &#128222; (phone) &#128187; (pc monitor) &#128488; (Speech Bubble)
-    this.rvSupportButtonTexts = ["&#128222;", "&#10005;"];
+    this.rvSupportButtonTexts = ["&#128187;", "&#10005;"];
     this.rvSupportButtonTitles = ["Help and support", "Disable Remote View"];
     this.rvSupportCursor = null;
     this._supportCursorId = 'remoteViewCursor';
