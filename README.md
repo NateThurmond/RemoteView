@@ -5,6 +5,9 @@ This project is a **remote web sharing application** utilizing **DOM diffing tec
 - The **server folder** contains the application needed to service support requests.
 - The **client folder** contains the build script for the support service library JavaScript file that can be included in other websites.
 
+## Demo Video
+<img src="assets/videos/remoteViewDemoVid.min.gif" width="850" />
+
 ---
 
 ## Getting Started
